@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duelo de Monstros - Yu-Gi-Oh!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin-top: 20px;
+            font-size: 36px;
+            color: #ffcc00;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #ff6600;
+        }
+        .card {
+            border: 2px solid #ffcc00;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+            background-color: #333;
+            width: 150px;
+            height: 270px;
+        }
+        img {
+            width: 130px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        #gameArea {
+            margin-top: 20px;
+            display: none; /* Esconde a área de cartas no início */
+        }
+        #result {
+            font-size: 20px;
+            margin-top: 20px;
+            color: #ffcc00;
+        }
+        #playButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff6600;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #playButton:hover {
+            background-color: #e65c00;
+        }
+        #instructions {
+            margin-top: 40px;
+            font-size: 16px;
+            color: #ccc;
+        }
+        #credits {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #555;
+        }
+        #scoreboard {
+            margin-top: 20px;
+            border: 2px solid #ffcc00;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #333;
+            color: #ffffff;
+        }
+        table {
+            color: #ffffff;
+            width: 100%;
+        }
+        td {
+            padding: 5px 10px;
+            text-align: center;
+            font-size: 16px;
+        }
+        th {
+            padding-bottom: 10px;
+            font-size: 18px;
+            color: #ffcc00;
+        }
+        #initialImages {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .initial-card {
+            border-radius: 8px;
+            width: 130px;
+            height: 180px;
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        footer a {
+            color: #ff6600;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #e65c00;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Duelo de Monstros</h1>
+    <h2>Quem será o mestre das cartas?</h2>
+
+    <!-- Imagens dos Deuses Egípcios na tela inicial -->
+    <div id="initialImages">
+        <img class="initial-card" src="https://images.ygoprodeck.com/images/cards/10000020.jpg" alt="Slifer, o Dragão Celeste">
+        <img class="initial-card" src="https://images.ygoprodeck.com/images/cards/10000000.jpg" alt="Obelisco, o Atormentador">
+        <img class="initial-card" src="https://images.ygoprodeck.com/images/cards/10000010.jpg" alt="Dragão Alado de Rá">
+    </div>
+
+    <!-- Área de jogo que estará escondida no início -->
+    <div id="gameArea">
+        <div id="playerCard" class="card"></div>
+        <div id="opponentCard" class="card"></div>
+    </div>
+
+    <div id="result"></div>
+    <button id="playButton">Iniciar Jogo</button>
+
+    <div id="scoreboard">
+        <table>
+            <tr>
+                <th>Placar Total</th>
+            </tr>
+            <tr>
+                <td>Vitórias</td>
+                <td id="wins">0</td>
+            </tr>
+            <tr>
+                <td>Derrotas</td>
+                <td id="losses">0</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="instructions">
+        Instruções: Jogue três turnos. Quem ganhar mais turnos será o vencedor. O placar será atualizado após o fim da melhor de três.
+    </div>
+
+    <footer>
+        © 2024 Gabriel Alcântara. Todos os direitos reservados.<br>
+        Este site e seu conteúdo são propriedade de Gabriel Alcântara. Nenhuma parte deste site pode ser reproduzida, distribuída, ou utilizada sem permissão expressa.<br>
+        <a href="https://www.linkedin.com/in/gabrielfaa/" target="_blank">LinkedIn</a> | 
+        <a href="mailto:agudaarte@gmail.com?subject=Feedback/Elogios/Críticas/Sugestões">Email</a>
+    </footer>
+
+    <script>
+        const cards = [
+            { name: "Dragão Branco de Olhos Azuis", attack: 3000, img: "https://images.ygoprodeck.com/images/cards/89631139.jpg" },
+            { name: "Mago Negro", attack: 2500, img: "https://images.ygoprodeck.com/images/cards/46986414.jpg" },
+            { name: "Exodia", attack: 1000, img: "https://images.ygoprodeck.com/images/cards/33396948.jpg" },
+            { name: "Dragão Negro de Olhos Vermelhos", attack: 2400, img: "https://images.ygoprodeck.com/images/cards/74677422.jpg" },
+            { name: "Dragão Meteor B.D.", attack: 3500, img: "https://images.ygoprodeck.com/images/cards/90660762.jpg" },
+            { name: "Grande Mariposa", attack: 2600, img: "https://images.ygoprodeck.com/images/cards/14141448.jpg" },
+            { name: "Dragão T.H.T.", attack: 2800, img: "https://images.ygoprodeck.com/images/cards/54752875.jpg" },
+            { name: "Zoa", attack: 2600, img: "https://images.ygoprodeck.com/images/cards/50705071.jpg" },
+            { name: "Dragão Azul Ultim.", attack: 4500, img: "https://images.ygoprodeck.com/images/cards/23995346.jpg" },
+            { name: "Guardião Celta", attack: 1400, img: "https://images.ygoprodeck.com/images/cards/91152256.jpg" },
+            // Outras cartas podem ser adicionadas aqui
+        ];
+
+        let turn = 1;
+        let wins = 0;
+        let losses = 0;
+        let totalWins = 0;
+        let totalLosses = 0;
+
+        function drawCard() {
+            const playerCard = cards[Math.floor(Math.random() * cards.length)];
+            const opponentCard = cards[Math.floor(Math.random() * cards.length)];
+
+            displayCard(playerCard, "playerCard");
+            displayCard(opponentCard, "opponentCard");
+
+            let resultText = `Sorteio ${turn} de cartas: `;
+
+            if (playerCard.attack > opponentCard.attack) {
+                resultText += "Você venceu!";
+                wins++;
+            } else if (playerCard.attack < opponentCard.attack) {
+                resultText += "Você perdeu!";
+                losses++;
+            } else {
+                resultText += "Empate!";
+            }
+
+            resultText += ` ${wins}x${losses}`;
+            document.getElementById("result").innerText = resultText;
+
+            turn++;
+            if (turn > 3) {
+                endGame();
+            } else {
+                // Atualizar o botão para "Duelar"
+                document.getElementById("playButton").innerText = "Duelar";
+            }
+        }
+
+        function endGame() {
+            let finalResult = "";
+            if (wins > losses) {
+                finalResult = "Você venceu a melhor de três!";
+                totalWins++;
+            } else if (losses > wins) {
+                finalResult = "Você perdeu a melhor de três.";
+                totalLosses++;
+            } else {
+                finalResult = "A melhor de três terminou empatada.";
+            }
+
+            document.getElementById("result").innerText += `\n${finalResult}`;
+            document.getElementById("playButton").innerText = "Recomeçar Jogo";
+            document.getElementById("playButton").onclick = resetGame;
+
+            document.getElementById("wins").innerText = totalWins;
+            document.getElementById("losses").innerText = totalLosses;
+        }
+
+        function resetGame() {
+            turn = 1;
+            wins = 0;
+            losses = 0;
+            document.getElementById("result").innerText = "";
+            document.getElementById("playButton").innerText = "Iniciar Jogo";
+            document.getElementById("playButton").onclick = startGame;
+            document.getElementById("gameArea").style.display = "none";
+            document.getElementById("initialImages").style.display = "flex"; // Mostrar deuses egípcios
+        }
+
+        function startGame() {
+            document.getElementById("gameArea").style.display = "block"; // Mostrar cartas
+            document.getElementById("initialImages").style.display = "none"; // Esconder deuses egípcios
+            drawCard();
+        }
+
+        function displayCard(card, elementId) {
+            document.getElementById(elementId).innerHTML = `
+                <h3>${card.name}</h3>
+                <img src="${card.img}" alt="${card.name}">
+                <p>ATK: ${card.attack}</p>
+            `;
+        }
+
+        document.getElementById("playButton").onclick = startGame; // Definir função inicial do botão
+    </script>
+</body>
+</html>
